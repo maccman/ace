@@ -1,0 +1,15 @@
+{
+  "name": "bullet",
+  "description": "Sinatra for Node",
+  "version": "0.0.1",
+  "author": "maccman",
+  "repository": {
+    "type" : "git",
+    "url": "http://github.com/maccman/bullet.git"
+  },
+  "main" : "./lib/index.js",
+  "dependencies": {
+    "strata": "0.8.2",
+    "fibers": "0.6.3"
+  }
+}
