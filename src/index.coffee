@@ -1,4 +1,4 @@
-require('./sugar')
+require('./ext')
 App = require('./app')
 
 Sequelize = require('sequelize')
