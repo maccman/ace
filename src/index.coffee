@@ -1,5 +1,6 @@
 require('./ext')
-App = require('./app')
+App     = require('./app')
+{sleep} = require('./fibers')
 
 Sequelize = require('sequelize')
 sequelize = new Sequelize('mydb', 'root')
@@ -9,15 +10,20 @@ Project   = sequelize.define('Project', {
 })
 
 app = new App
-app.get '/', (request) ->
+
+app.get '/users/:name', ->
+  @response "Hi #{@params.name}"
+
+app.get '/', ->
 
   project = Project.build({
-    name: request.params.name
+    name: @params.name
   })
 
   project.save().wait()
 
-  # sleep(1000)
+  sleep(1000)
+  
   'ok'
-
+  
 app.run()

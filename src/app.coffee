@@ -1,6 +1,6 @@
 strata  = require('strata')
 {task}  = require('./fibers')
-Request = require('./request')
+Context = require('./context')
 
 class App
   constructor: ->
@@ -13,26 +13,10 @@ class App
     @app.use.apply(@app, arguments)
 
   route: (type, route, callback) ->
-    @app[type] route, task (env, returns) =>
-      request         = new Request(env)
-      request.response = ->
-        request.served = true
-        returns(arguments...)
-
-      response = callback.call(@, request)
-
-      return if request.served
-
-      if Array.isArray(response)
-        returns.apply(returns, response)
-      else if response.body?
-        returns(
-          response.status or 200,
-          response.headers or {},
-          response.body or ''
-        )
-      else
-        returns(200, {}, response or '')
+    @app[type] route, task (env, callback) =>
+      context  = new Context(env, callback)
+      response = callback.call(context)
+      context.response(response)
 
   get:  (args...) -> @route('get',  args...)
   post: (args...) -> @route('post', args...)
