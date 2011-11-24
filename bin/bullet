@@ -1,0 +1,29 @@
+#!/usr/bin/env node
+
+var vm   = require('vm'),
+    path = require('path'),
+    fs   = require('fs'),
+    argv = process.argv.slice(2),
+    App  = require('../lib/app');
+
+require('../lib/ext');
+require('../lib/helpers');
+
+try {
+  require('coffee-script');
+} catch(e) { }
+
+filename = argv[0];
+
+if ( !filename ) {
+  console.log("Bullet usage:");
+  console.log("\tbullet PATH");
+  return;
+}
+
+filename = path.resolve(filename);
+
+var app = new App;
+global.app = app;
+require(filename);
+app.run();

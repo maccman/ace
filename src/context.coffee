@@ -26,5 +26,6 @@ class Context
   @::__defineGetter__ 'params',   -> @request.params
   @::__defineGetter__ 'query',    -> @request.query
   @::__defineGetter__ 'body',     -> @request.body
+  @::__defineGetter__ 'route',    -> @env.route
 
 module.exports = Context

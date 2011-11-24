@@ -1,4 +1,5 @@
 require('fibers')
+context = require('./context')
 
 task = (callback) ->
   ->
@@ -13,6 +14,9 @@ sleep = (ms) ->
     fiber.run()
   , ms
   yield()
+  
+context.include
+  sleep: sleep
 
 module.exports =
   task: task

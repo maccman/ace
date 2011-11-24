@@ -13,8 +13,8 @@ class App
     @app.use.apply(@app, arguments)
 
   route: (type, route, callback) ->
-    @app[type] route, task (env, callback) =>
-      context  = new Context(env, callback)
+    @app[type] route, task (env, returns) =>
+      context  = new Context(env, returns)
       response = callback.call(context)
       context.response(response)
 
