@@ -1,5 +1,6 @@
-fs   = require('fs')
-path = require('path')
+fs      = require('fs')
+path    = require('path')
+context = require('./context')
 
 sendFile = (file, options = {}) ->
   if typeof file is 'string'
@@ -26,6 +27,10 @@ sendFile = (file, options = {}) ->
 
 head = (status = 200, body = '') ->
   [status, {}, body]
+  
+context.include
+  sendFile: sendFile
+  head: head
 
 module.exports =
   sendFile: sendFile

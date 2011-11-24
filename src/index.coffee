@@ -1,4 +1,5 @@
 require('./ext')
+require('./helpers')
 App     = require('./app')
 {sleep} = require('./fibers')
 
@@ -16,9 +17,9 @@ app.get '/users/:name', ->
 
 app.get '/', ->
 
-  project = Project.build({
+  project = Project.build(
     name: @params.name
-  })
+  )
 
   project.save().wait()
 

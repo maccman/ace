@@ -1,6 +1,9 @@
 Request = require('./request')
 
 class Context
+  @include: (obj) ->
+    @::[key] = value for key, value of obj
+  
   constructor: (@env, @callback) ->
     @request = new Request(env)
   
