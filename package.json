@@ -8,6 +8,7 @@
     "url": "http://github.com/maccman/bullet.git"
   },
   "main" : "./lib/index.js",
+  "bin": { "bullet": "./bin/bullet" },
   "dependencies": {
     "strata": "0.8.2",
     "fibers": "0.6.3"
