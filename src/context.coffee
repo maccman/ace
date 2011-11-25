@@ -1,5 +1,4 @@
 strata  = require('strata')
-Request = require('./request')
 
 class Context
   @include: (obj) ->
