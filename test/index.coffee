@@ -6,16 +6,16 @@ Project   = sequelize.define('Project', {
 })
 
 app.get '/users/:name', ->
-  @response "Hi #{@route.name}"
+  "Hi #{@route.name}"
 
 app.get '/', ->
-
+  
   project = Project.build(
     name: @params.name
   )
 
   project.save().wait()
-
-  @sleep(1000)
   
-  'ok'
+  # @sleep(1000)
+  
+  "Saved project: #{project.id}"

@@ -20,4 +20,5 @@ context.include
 
 module.exports =
   task: task
+  wrap: task
   sleep: sleep

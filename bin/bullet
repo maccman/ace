@@ -3,6 +3,7 @@
 var vm   = require('vm'),
     path = require('path'),
     fs   = require('fs'),
+    strata = require('strata'),
     argv = process.argv.slice(2),
     App  = require('../lib/app');
 
@@ -26,4 +27,4 @@ filename = path.resolve(filename);
 var app = new App;
 global.app = app;
 require(filename);
-app.run();
+strata.run(app);
