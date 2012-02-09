@@ -10,7 +10,7 @@
   "main" : "./lib/index.js",
   "bin": { "bullet": "./bin/bullet" },
   "dependencies": {
-    "strata": "0.8.2",
-    "fibers": "0.6.3"
+    "strata": "git://github.com/maccman/strata.git",
+    "fibers": "git://github.com/laverdet/node-fibers.git#master"
   }
 }
