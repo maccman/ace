@@ -5,7 +5,7 @@ Project   = sequelize.define('Project', {
   description: Sequelize.TEXT
 })
 
-Fiber.poolSize = 800
+app.pool.size = 800
 
 app.get '/users/:name', ->
   "Hi #{@route.name}"
@@ -18,5 +18,4 @@ app.get '/', ->
   project.save().wait()
 
   # @sleep(200)
-
   "Saved project: #{project.id}"

@@ -8,6 +8,7 @@ class Context
     @request = new strata.Request(@env)
 
   response: (response) ->
+    return false if response is false
     return false if @served
     @served = true
 
@@ -19,7 +20,7 @@ class Context
         response.headers or {},
         response.body or ''
       )
-    else if response isnt false
+    else
       @callback(200, {}, response or '')
 
   @::__defineGetter__ 'cookies',  -> @request.cookies.bind(@request).wait()

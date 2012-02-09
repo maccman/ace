@@ -16,11 +16,10 @@ sleep = (ms) ->
   yield()
 
 class Pool
-  constructor: (@size = 100) ->
+  constructor: (size = 100) ->
     @queue = []
     @count = 0
-    if Fiber.poolSize < @size
-      Fiber.poolSize = @size
+    @setSize(size)
 
   call: (callback) ->
     @queue.push(callback)
@@ -33,6 +32,14 @@ class Pool
       args = arguments
       @call ->
         callback(args...)
+
+  setSize: (size) ->
+    @_size = size
+    if Fiber.poolSize < @_size
+      Fiber.poolSize = @_size
+
+  @::__defineGetter__ 'size',  -> @_size
+  @::__defineSetter__ 'size',  @::setSize
 
   # Private
   addFiber: ->
