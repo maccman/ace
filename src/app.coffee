@@ -6,14 +6,14 @@ context = require('./context')
 static  = require('./static')
 
 class App extends strata.Builder
-  config:
-    static: true
+  settings:
+    static:   true
     sessions: true
-    port: 1982
-    bind: '0.0.0.0'
-    root: process.cwd()
-    views: './views'
-    public: './public'
+    port:     1982
+    bind:     '0.0.0.0'
+    root:     process.cwd()
+    views:    './views'
+    public:   './public'
 
   constructor: ->
     super()
@@ -23,31 +23,45 @@ class App extends strata.Builder
     @use(strata.contentType, 'text/html')
     @use(strata.contentLength)
 
+  before: (filter) ->
+    filter = context.wrap(filter)
+    @use (app) ->
+      (env, callback) ->
+        app env, ->
+          # Original request
+          original = arguments
+
+          # Call filter
+          filter env, (status) ->
+            if status is 200
+              callback(original...)
+            else
+              callback(arguments...)
+
   route: (pattern, app, methods) ->
-    app = context.wrap(app)
-    app = @pool.wrap(app)
-    @router.route(pattern, app, methods)
+    @router.route(pattern, context.wrap(app), methods)
 
   set: (key, value) ->
     if typeof key is 'object'
       @set(k, v) for k, v of key
     else
-      @config[key] = value
+      @settings[key] = value
 
-  addSessions: ->
+  useSessions: ->
     options = {}
-    if typeof @config.sessions is 'object'
-      options = @config.sessions
+    if typeof @settings.sessions is 'object'
+      options = @settings.sessions
     @use(strata.sessionCookie, options)
 
-  addStatic: ->
-    if fs.existsSync(@config.public)
-      @use(static, @config.public, ['index.html'])
+  useStatic: ->
+    if fs.existsSync(@settings.public)
+      @use(static, @settings.public, ['index.html'])
 
   toApp: ->
-    @addSessions() if @config.sessions
-    @addStatic()   if @config.static
-    @run(@router)
+    @useSessions() if @settings.sessions
+    @useStatic()   if @settings.static
+    @run (env, callback) =>
+      @pool.wrap(@router.toApp())(env, callback)
     super
 
 methods =

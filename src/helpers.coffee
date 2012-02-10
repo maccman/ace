@@ -37,6 +37,7 @@ context.include
   sendFile: sendFile
   head: head
   redirect: redirect
+  ok: [200, {}, '']
 
 module.exports =
   sendFile: sendFile

@@ -30,7 +30,7 @@ global.app = app;
 require(filename);
 
 strata.run(app, {
-  host:   app.config.host,
-  port:   app.config.port,
-  socket: app.config.socket
+  host:   app.settings.host,
+  port:   app.settings.port,
+  socket: app.settings.socket
 });

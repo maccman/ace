@@ -13,6 +13,10 @@ Project   = sequelize.define('Project', {
 #
 # app.error type, ->
 
+app.before ->
+  console.log 'before'
+  @ok
+
 app.get '/users/:name', ->
   "Hi #{@route.name}"
 
@@ -20,6 +24,9 @@ app.get '/sessions', ->
   res = @session.test
   @session.test = 'works!'
   res
+
+app.get '/test', ->
+  'test'
 
 app.get '/redirect', ->
   @redirect 'http://google.com'
@@ -31,7 +38,7 @@ app.get '/projects', ->
 
   project.save().wait()
 
-  # @sleep(200)
+  # @sleep(2000)
   # @response [200, {}, '']
   # @response ''
   # @response ->
