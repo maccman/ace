@@ -3,18 +3,23 @@ fs      = require('fs')
 context = require('../context')
 eco     = require('eco')
 
-view = (template, context) ->
+compile = (path, context) ->
   fiber = Fiber.current
-  fs.readFile template, 'utf8', (err, data) ->
+  fs.readFile path, 'utf8', (err, data) ->
     fiber.throwInto(err) if err
 
-    headers = {'Content-Type': 'text/html'}
-    result  = eco.render(data, projects)
-    fiber.run([200, headers, result])
+    fiber.run eco.render(data, projects)
   yield()
+
+view = (name, context) ->
+  headers = {'Content-Type': 'text/html'}
+  path    = @resolve(name)
+
+  [200, headers, compile(path, context)]
 
 context.include
   eco: view
 
 module.exports =
   eco: view
+  compile: compile

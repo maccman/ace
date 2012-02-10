@@ -3,16 +3,24 @@ fs      = require('fs')
 context = require('../context')
 stylus  = require('stylus')
 
-view = (template, context) ->
+compile = (path, context) ->
   fiber = Fiber.current
-  fs.readFile template, 'utf8', (err, data) ->
+  fs.readFile path, 'utf8', (err, data) ->
     fiber.throwInto(err) if err
 
-    headers = {'Content-Type': 'text/css'}
-    stylus.render data, {filename: template}, (err, css) ->
+    stylus.render data, {filename: path}, (err, css) ->
       fiber.throwInto(err) if err
-      fiber.run([200, headers, css])
+      fiber.run(css)
   yield()
+
+view = (name, context) ->
+  headers = {'Content-Type': 'text/css'}
+  path    = @resolve(name)
+
+  [200, headers, compile(path, context)]
+
+# So require.resolve works correctly
+require.extensions['.styl'] = (module, filename) ->
 
 context.include
   stylus: view
@@ -20,3 +28,4 @@ context.include
 
 module.exports =
   stylus: view
+  compile: compile

@@ -4,12 +4,6 @@ mime   = require('mime')
 strata = require('./index')
 utils  = strata.utils
 
-exists = (path) ->
-  fiber = Fiber.current
-  fs.exists path, (exists) ->
-    fiber.run(exists)
-  yield()
-
 sendFile = (callback, path, stats) ->
   callback 200,
     'Content-Type': mime.lookup(path)

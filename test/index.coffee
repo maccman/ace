@@ -18,7 +18,7 @@ app.before '/users/*', ->
   @ok
 
 app.get '/users/:name', ->
-  @session.admin = true
+  console.log(@resolve('user'))
   "Hi #{@route.name}"
 
 app.get '/sessions', ->

@@ -23,6 +23,8 @@
 
 ##Fibers
 
+    exists = fs.exists.bind(fs)
+
     @sleep()
 
     app.get '/projects', ->

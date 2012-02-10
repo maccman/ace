@@ -3,18 +3,23 @@ fs      = require('fs')
 context = require('../context')
 coffee  = require('coffee-script')
 
-view = (template, context) ->
+compile = (path, context) ->
   fiber = Fiber.current
-  fs.readFile template, 'utf8', (err, data) ->
+  fs.readFile path, 'utf8', (err, data) ->
     fiber.throwInto(err) if err
 
-    headers = {'Content-Type': 'text/javascript'}
-    result  = coffee.compile(data)
-    fiber.run([200, headers, result])
+    fiber.run coffee.compile(data)
   yield()
+
+view = (name, context) ->
+  headers = {'Content-Type': 'text/javascript'}
+  path    = @resolve(name)
+
+  [200, headers, compile(path, context)]
 
 context.include
   coffee: view
 
 module.exports =
   coffee: view
+  compile: compile

@@ -1,13 +1,12 @@
 require('./ext')
 
-App     = require('./app')
-context = require('./context')
-helpers = require('./helpers')
-
-for name in ['coffee', 'eco', 'less', 'mustache']
-  try require("./templates/#{name}")
+App       = require('./app')
+context   = require('./context')
+helpers   = require('./helpers')
+templates = require('./templates')
 
 module.exports =
   App: App
   context: context
   helpers: helpers
+  templates: templates
