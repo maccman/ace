@@ -39,7 +39,11 @@ class App extends strata.Builder
               callback(arguments...)
 
   route: (pattern, app, methods) ->
-    @router.route(pattern, context.wrap(app), methods)
+    @router.route(
+      pattern,
+      context.wrap(app),
+      methods
+    )
 
   set: (key, value) ->
     if typeof key is 'object'
