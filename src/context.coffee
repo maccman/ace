@@ -14,7 +14,7 @@ class Context
 
     if Array.isArray(response)
       @callback(response...)
-    else if response.body?
+    else if response?.body?
       @callback(
         response.status or 200,
         response.headers or {},
@@ -28,6 +28,8 @@ class Context
   @::__defineGetter__ 'query',    -> @request.query.bind(@request).wait()
   @::__defineGetter__ 'body',     -> @request.body.bind(@request).wait()
   @::__defineGetter__ 'route',    -> @env.route
+  @::__defineGetter__ 'session',  -> @env.session
+  @::__defineSetter__ 'session',  (value) -> @env.session = value
 
   @wrap: (app) ->
     (env, callback) ->

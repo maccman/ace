@@ -23,8 +23,14 @@ if ( !filename ) {
 }
 
 filename = path.resolve(filename);
+process.chdir(path.dirname(filename))
 
 var app = new App;
 global.app = app;
 require(filename);
-strata.run(app);
+
+strata.run(app, {
+  host:   app.config.host,
+  port:   app.config.port,
+  socket: app.config.socket
+});

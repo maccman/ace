@@ -7,7 +7,7 @@ mustache = (template, context) ->
   Mu.compile template, (err, parsed) ->
     fiber.throwInto(err) if err
 
-    headers = {'Transfer-Encoding': 'chunked'}
+    headers = {'Transfer-Encoding': 'chunked', 'Content-Type': 'text/html'}
     fiber.run([200, headers, Mu.render(template, context)])
   yield()
 

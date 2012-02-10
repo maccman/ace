@@ -5,14 +5,26 @@ Project   = sequelize.define('Project', {
   description: Sequelize.TEXT
 })
 
-app.pool.size = 800
-
-# TODO CRUD with auth
+# TODO CRUD with auth. Think about:
+# - picking up local npm deps
+#
+# app.set sessions: true
+# app.set static: true
+#
+# app.error type, ->
 
 app.get '/users/:name', ->
   "Hi #{@route.name}"
 
-app.get '/', ->
+app.get '/sessions', ->
+  res = @session.test
+  @session.test = 'works!'
+  res
+
+app.get '/redirect', ->
+  @redirect 'http://google.com'
+
+app.get '/projects', ->
   project = Project.build(
     name: @params.name
   )
@@ -20,4 +32,8 @@ app.get '/', ->
   project.save().wait()
 
   # @sleep(200)
+  # @response [200, {}, '']
+  # @response ''
+  # @response ->
+  # @head 200
   "Saved project: #{project.id}"
