@@ -1,5 +1,5 @@
 {
-  "name": "bullet",
+  "name": "ace",
   "description": "Sinatra for Node",
   "version": "0.0.1",
   "author": "maccman",
@@ -8,7 +8,7 @@
     "url": "http://github.com/maccman/bullet.git"
   },
   "main" : "./lib/index.js",
-  "bin": { "bullet": "./bin/bullet" },
+  "bin": { "ace": "./bin/ace" },
   "dependencies": {
     "strata": "git://github.com/maccman/strata.git",
     "fibers": "git://github.com/laverdet/node-fibers.git#master"

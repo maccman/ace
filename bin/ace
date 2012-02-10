@@ -17,8 +17,8 @@ try {
 filename = argv[0];
 
 if ( !filename ) {
-  console.log("Bullet usage:");
-  console.log("\tbullet PATH");
+  console.log("Ace usage:");
+  console.log("\tace PATH");
   return;
 }
 

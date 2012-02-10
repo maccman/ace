@@ -1,5 +1,6 @@
 fs      = require('fs')
 path    = require('path')
+strata  = require('strata')
 context = require('./context')
 
 sendFile = (file, options = {}) ->
@@ -27,10 +28,15 @@ sendFile = (file, options = {}) ->
 
 head = (status = 200, body = '') ->
   [status, {}, body]
-  
+
+redirect = (url) ->
+  strata.redirect(@env, @callback, url)
+  @served = true
+
 context.include
   sendFile: sendFile
   head: head
+  redirect: redirect
 
 module.exports =
   sendFile: sendFile

@@ -7,6 +7,8 @@ Project   = sequelize.define('Project', {
 
 app.pool.size = 800
 
+# TODO CRUD with auth
+
 app.get '/users/:name', ->
   "Hi #{@route.name}"
 
