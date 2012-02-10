@@ -13,11 +13,12 @@ Project   = sequelize.define('Project', {
 #
 # app.error type, ->
 
-app.before ->
+app.before '/users/*', ->
   console.log 'before'
   @ok
 
 app.get '/users/:name', ->
+  @session.admin = true
   "Hi #{@route.name}"
 
 app.get '/sessions', ->

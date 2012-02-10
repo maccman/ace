@@ -46,6 +46,18 @@
     app.before ->
       # Before filter
 
+    app.before '/users*', ->
+    app.before conditionFunction, ->
+
+    app.context.include
+      loggedIn: -> !!@session.user_id
+
+    app.before '/admin*', ->
+      if @loggedIn()
+        @ok
+      else
+        @redirect '/login'
+
 ##Configuration
 
     @app.set sessions: true
@@ -57,5 +69,6 @@
       @redirect 'http://google.com'
 
     @head 200
+    @ok
 
     @sendFile

@@ -4,6 +4,7 @@ strata  = require('strata')
 fibers  = require('./fibers')
 context = require('./context')
 static  = require('./static')
+filter  = require('./filter')
 
 class App extends strata.Builder
   settings:
@@ -15,6 +16,8 @@ class App extends strata.Builder
     views:    './views'
     public:   './public'
 
+  context: context
+
   constructor: ->
     super()
     @pool   = new fibers.Pool
@@ -23,20 +26,12 @@ class App extends strata.Builder
     @use(strata.contentType, 'text/html')
     @use(strata.contentLength)
 
-  before: (filter) ->
-    filter = context.wrap(filter)
-    @use (app) ->
-      (env, callback) ->
-        app env, ->
-          # Original request
-          original = arguments
+  before: (conditions, callback) ->
+    unless callback
+      callback   = conditions
+      conditions = true
 
-          # Call filter
-          filter env, (status) ->
-            if status is 200
-              callback(original...)
-            else
-              callback(arguments...)
+    @use(filter, conditions, callback)
 
   route: (pattern, app, methods) ->
     @router.route(

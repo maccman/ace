@@ -6,7 +6,7 @@ utils  = strata.utils
 
 exists = (path) ->
   fiber = Fiber.current
-  path.exists path, (exists) ->
+  fs.exists path, (exists) ->
     fiber.run(exists)
   yield()
 
@@ -19,7 +19,7 @@ sendFile = (callback, path, stats) ->
 
 module.exports = (app, root, index) ->
   throw new strata.Error('Invalid root directory') if typeof root isnt 'string'
-  throw new strata.Error("Directory #{root} does not exist") unless path.existsSync(root)
+  throw new strata.Error("Directory #{root} does not exist") unless fs.existsSync(root)
   throw new strata.Error("#{root} is not a directory") unless fs.statSync(root).isDirectory()
   index = [ index ]  if index and typeof index is 'string'
 

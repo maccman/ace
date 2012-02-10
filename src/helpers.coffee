@@ -34,10 +34,14 @@ redirect = (url) ->
   @served = true
 
 context.include
-  sendFile: sendFile
-  head: head
-  redirect: redirect
-  ok: [200, {}, '']
+  sendFile:       sendFile
+  head:           head
+  redirect:       redirect
+  ok:             [200, {}, '']
+  unauthorized:   [401, {}, '']
+  forbidden:      [403, {}, '']
+  not_found:      [404, {}, '']
+  not_acceptable: [406, {}, '']
 
 module.exports =
   sendFile: sendFile
