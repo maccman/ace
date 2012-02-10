@@ -19,7 +19,7 @@
 
 ##Templates
 
-    @eco './views/test.eco'
+    @eco 'test', name: @route.name
 
 ##Fibers
 
