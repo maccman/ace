@@ -18,8 +18,7 @@ app.before '/users/*', ->
   @ok
 
 app.get '/users/:name', ->
-  console.log(@resolve('user'))
-  "Hi #{@route.name}"
+  @eco 'user', name: @route.name
 
 app.get '/sessions', ->
   res = @session.test

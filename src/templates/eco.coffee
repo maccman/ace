@@ -8,7 +8,7 @@ compile = (path, context) ->
   fs.readFile path, 'utf8', (err, data) ->
     fiber.throwInto(err) if err
 
-    fiber.run eco.render(data, projects)
+    fiber.run eco.render(data, context)
   yield()
 
 view = (name, context) ->

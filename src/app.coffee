@@ -36,7 +36,7 @@ class App extends strata.Builder
   route: (pattern, app, methods) ->
     @router.route(
       pattern,
-      context.wrap(app),
+      context.wrap(app, @),
       methods
     )
 

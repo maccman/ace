@@ -4,7 +4,7 @@ class Context
   @include: (obj) ->
     @::[key] = value for key, value of obj
 
-  constructor: (@env, @callback) ->
+  constructor: (@env, @callback, @app = {}) ->
     @request = new strata.Request(@env)
 
   response: (response) ->
@@ -28,12 +28,13 @@ class Context
   @::__defineGetter__ 'query',    -> @request.query.bind(@request).wait()
   @::__defineGetter__ 'body',     -> @request.body.bind(@request).wait()
   @::__defineGetter__ 'route',    -> @env.route
+  @::__defineGetter__ 'settings', -> @app.settings
   @::__defineGetter__ 'session',  -> @env.session
   @::__defineSetter__ 'session',  (value) -> @env.session = value
 
-  @wrap: (app) ->
+  @wrap: (app, base) ->
     (env, callback) ->
-      context = new Context(env, callback)
+      context = new Context(env, callback, base)
       result  = app.call context, env, callback
       context.response(result)
 

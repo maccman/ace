@@ -6,7 +6,7 @@ for name in ['coffee', 'eco', 'less', 'mustache', 'stylus']
 
 resolve = (name) ->
   try return require.resolve(name)
-  try return require.resolve(path.join(@settings.view or '', name))
+  try return require.resolve(path.resolve(@settings.views, name))
   throw "Cannot find #{name}"
 
 context.include

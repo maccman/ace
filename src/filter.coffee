@@ -32,7 +32,7 @@ passes = (env, conditions) ->
 
     false
 
-module.exports = (app, conditions, filter) ->
+module.exports = (app, conditions, filter, base) ->
   (env, callback) ->
     app env, ->
       original = arguments
@@ -49,7 +49,7 @@ module.exports = (app, conditions, filter) ->
           else
             callback(arguments...)
 
-        context.wrap(filter)(env, filterCallback)
+        context.wrap(filter, base)(env, filterCallback)
 
       else
         callback(original...)
