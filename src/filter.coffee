@@ -15,6 +15,10 @@ passes = (env, conditions) ->
   else if typeof conditions is 'string'
     passesRoute(env, conditions)
 
+  else if Array.isArray(conditions)
+    conditions.some (route) ->
+      passesRoute(env, route)
+
   else
     request = new strata.Request(env)
 
@@ -44,7 +48,7 @@ module.exports = (app, conditions, filter, base) ->
           # from the filter, otherwise carry on with
           # the original request.
 
-          if status is 200
+          if @status is 200
             callback(original...)
           else
             callback(arguments...)

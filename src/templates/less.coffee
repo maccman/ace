@@ -3,7 +3,7 @@ fs      = require('fs')
 context = require('../context')
 less    = require('less')
 
-compile = (path, context) ->
+compile = (path) ->
   fiber = Fiber.current
   fs.readFile path, 'utf8', (err, data) ->
     fiber.throwInto(err) if err
@@ -13,10 +13,10 @@ compile = (path, context) ->
       fiber.run(css)
   yield()
 
-view: (name, context) ->
+view = (name) ->
   @contentType = 'text/css'
   path         = @resolve(name)
-  compile(path, context)
+  compile(path)
 
 require.extensions['.less'] or= (module, filename) ->
 

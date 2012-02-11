@@ -11,9 +11,16 @@ compile = (path, context) ->
     fiber.run eco.render(data, context)
   yield()
 
-view = (name, context) ->
-  path = @resolve(name)
-  compile(path, context)
+view = (name, options = {}) ->
+  @contentType = 'text/javascript'
+  path         = @resolve(name)
+  result       = compile(path, this)
+
+  layout = options.layout
+  layout ?= @settings.layout
+  result = compile(layout, body: result) if layout
+
+  result
 
 context.include
   eco: view

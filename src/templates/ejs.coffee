@@ -1,22 +1,21 @@
 path    = require('path')
 fs      = require('fs')
 context = require('../context')
-coffee  = require('coffee-script')
+ejs     = require('ejs')
 
-compile = (path) ->
+compile = (path, context) ->
   fiber = Fiber.current
   fs.readFile path, 'utf8', (err, data) ->
     fiber.throwInto(err) if err
 
-    fiber.run coffee.compile(data)
+    fiber.run ejs.render(data, context)
   yield()
 
 view = (name) ->
-  @contentType = 'text/javascript'
   path = @resolve(name)
-  compile(path)
+  compile(path, this)
 
 context.include
-  coffee: view
+  ejs: view
 
 module.exports = compile

@@ -1,27 +1,42 @@
-fs      = require('fs')
-path    = require('path')
-strata  = require('strata')
-fibers  = require('./fibers')
-context = require('./context')
-static  = require('./static')
-filter  = require('./filter')
+fs        = require('fs')
+path      = require('path')
+strata    = require('strata')
+fibers    = require('./fibers')
+context   = require('./context')
+static    = require('./static')
+filter    = require('./filter')
+templates = require('./templates')
 
 class App extends strata.Builder
-  settings:
+  defaults:
     static:   true
     sessions: true
     port:     1982
     bind:     '0.0.0.0'
     root:     process.cwd()
     views:    './views'
+    assets:   './assets'
     public:   './public'
+    layout:   'layout'
 
   context: context
 
   constructor: ->
     super()
+
+    @settings = {}
+    @set @defaults
+
+    @settings.layout = templates.resolve(
+      @settings.layout, false
+    )
+
+    unless fs.existsSync(@settings.public)
+      @settings.static = false
+
     @pool   = new fibers.Pool
     @router = new strata.Router
+
     @use(strata.commonLogger)
     @use(strata.contentType, 'text/html')
     @use(strata.contentLength)
@@ -32,9 +47,12 @@ class App extends strata.Builder
       conditions = true
 
     @use(filter, conditions, callback)
-    
+
   rewrite: (pattern, replacement) ->
     @use(strata.rewrite, pattern, replacement)
+
+  root: (replacement) ->
+    @rewrite('/', replacement)
 
   route: (pattern, app, methods) ->
     @router.route(
@@ -56,8 +74,7 @@ class App extends strata.Builder
     @use(strata.sessionCookie, options)
 
   useStatic: ->
-    if fs.existsSync(@settings.public)
-      @use(static, @settings.public, ['index.html'])
+    @use(static, @settings.public, ['index.html'])
 
   toApp: ->
     @useSessions() if @settings.sessions
@@ -65,7 +82,7 @@ class App extends strata.Builder
     @run (env, callback) =>
       @pool.wrap(@router.toApp())(env, callback)
     super
-  
+
   serve: ->
     strata.run this,
       host:   @settings.host

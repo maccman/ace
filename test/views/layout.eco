@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Blog</title>
+  <link rel="stylesheet" href="/application.css" type="text/css">
+</head>
+<body>
+  <%- @body %>
+</body>
+</html>

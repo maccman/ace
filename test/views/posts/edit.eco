@@ -1,0 +1,6 @@
+<form action="<%= @post.url() %>" method="post">
+  <label for=""></label><input type="text/submit/hidden/button" name="" value="" id="">
+
+
+  <button>Save</button>
+</form>

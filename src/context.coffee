@@ -23,14 +23,17 @@ class Context
       @response.status  = result[0]
       @response.headers = result[1]
       @response.body    = result[3]
-      
+
     else if typeof result is 'integer'
       @response.status = result
 
     else if result instanceof strata.Response
       @response = result
 
-    else
+    else if typeof result is 'function'
+      @response.body = result
+
+    else if typeof result is 'string'
       @response.body = result
 
     @response.send(@callback)
@@ -38,46 +41,46 @@ class Context
   setter: @::__defineSetter__
   getter: @::__defineGetter__
 
-  @::getter 'cookies', -> 
+  @::getter 'cookies', ->
     @request.cookies.bind(@request).wait()
-  
-  @::getter 'params', -> 
+
+  @::getter 'params', ->
     @request.params.bind(@request).wait()
-    
-  @::getter 'query', -> 
+
+  @::getter 'query', ->
     @request.query.bind(@request).wait()
-  
-  @::getter 'body', -> 
+
+  @::getter 'body', ->
     @request.body.bind(@request).wait()
-  
-  @::getter 'route', -> 
+
+  @::getter 'route', ->
     @env.route
-  
-  @::getter 'settings', -> 
+
+  @::getter 'settings', ->
     @app.settings
 
-  @::getter 'session', -> 
+  @::getter 'session', ->
     @env.session or= {}
-  
-  @::setter 'session', (value) -> 
+
+  @::setter 'session', (value) ->
     @env.session = value
 
-  @::getter 'status', -> 
+  @::getter 'status', ->
     @response.status
-  
-  @::setter 'status', (value) -> 
+
+  @::setter 'status', (value) ->
     @response.status = value
 
-  @::getter 'headers', -> 
+  @::getter 'headers', ->
     @response.headers
-  
-  @::setter 'contentType',  (value) -> 
-    @response.headers['Content-Type'] = value
-  
-  @::setter 'body', (value) -> 
-    @response.body = value  
 
-  accept: (type) -> 
-    @request.accept(type)  
+  @::setter 'contentType',  (value) ->
+    @response.headers['Content-Type'] = value
+
+  @::setter 'body', (value) ->
+    @response.body = value
+
+  accept: (type) ->
+    @request.accept(type)
 
 module.exports = Context

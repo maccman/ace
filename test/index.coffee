@@ -12,7 +12,8 @@ app.before '/users/*', ->
   @ok
 
 app.get '/users/:name', ->
-  @eco 'user', name: @route.name
+  @name = @route.name
+  @eco 'user'
 
 app.get '/sessions', ->
   res = @session.test

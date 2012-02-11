@@ -10,11 +10,11 @@ compile = (path, context) ->
     fiber.run mu.compileText(data)(context)
   yield()
 
-view = (name, context) ->
+view = (name) ->
   @headers['Transfer-Encoding'] = 'chunked'
   @headers['Content-Type']      = 'text/html'
   path = @resolve(name)
-  compile(path, context)
+  compile(path, this)
 
 # So require.resolve works correctly
 require.extensions['.mustache'] = (module, filename) ->
@@ -22,5 +22,6 @@ require.extensions['.mu'] = (module, filename) ->
 
 context.include
   mustache: view
+  mu: view
 
 module.exports = compile

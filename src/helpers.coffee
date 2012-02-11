@@ -23,32 +23,39 @@ sendFile = (file, options = {}) ->
 
   @headers['Transfer-Encoding'] = 'chunked'
 
-  file
+  @body = file
 
 head = (status = 200) ->
-  status
+  @status = status
 
-redirect = (url) ->
-  strata.redirect(
-    @env, @callback,
-    url.url?() or url.url or url
-  )
-  @served = true
+redirect = (location, status = 302) ->
+  location = location.url?() or location.url or location
+  content  = "<p>You are being redirected to <a href=\"#{location}\">#{location}</a>.</p>"
+  @status  = status
+  @headers['Location'] = location
 
 basicAuth = (callback, realm = 'Authorization Required') ->
-  headers =
-    'Content-Type': 'text/plain'
-    'WWW-Authenticate': "Basic realm='#{realm}'"
-  unauthorized = [401, headers, 'Unauthorized']
+  unauthorized = =>
+    headers =
+      'Content-Type': 'text/plain'
+      'WWW-Authenticate': "Basic realm='#{realm}'"
+
+    @status  = 401
+    @headers = headers
+    @body    = 'Unauthorized'
+    false
 
   auth = env.httpAuthorization
-  return unauthorized unless auth
+  return unauthorized() unless auth
 
   [scheme, creds] = authorization.split(' ')
-  return 400 if scheme.toLowerCase() != 'basic'
+  return @head(@badRequest) if scheme.toLowerCase() != 'basic'
 
   [user, pass] = new Buffer(creds, 'base64').toString().split(':')
-  if callback(user, pass) then 200 else unauthorized
+  if result = callback.call(this, user, pass)
+    @head(@ok) and result
+  else
+    unauthorized()
 
 context.include
   sendFile:       sendFile
@@ -56,10 +63,11 @@ context.include
   redirect:       redirect
   basicAuth:      basicAuth
   ok:             200
+  badRequest:     400
   unauthorized:   401
   forbidden:      403
-  not_found:      404
-  not_acceptable: 406
+  notFound:       404
+  notAcceptable:  406
 
 module.exports =
   sendFile: sendFile

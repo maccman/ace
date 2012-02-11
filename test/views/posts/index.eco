@@ -1,3 +1,5 @@
+<h1>Listing Posts</h1>
+
 <ul>
 <% for post in @posts: %>
   <li>
