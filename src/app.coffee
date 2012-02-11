@@ -32,11 +32,14 @@ class App extends strata.Builder
       conditions = true
 
     @use(filter, conditions, callback)
+    
+  rewrite: (pattern, replacement) ->
+    @use(strata.rewrite, pattern, replacement)
 
   route: (pattern, app, methods) ->
     @router.route(
       pattern,
-      context.wrap(app, @),
+      context.wrap(app, this),
       methods
     )
 
@@ -62,6 +65,12 @@ class App extends strata.Builder
     @run (env, callback) =>
       @pool.wrap(@router.toApp())(env, callback)
     super
+  
+  serve: ->
+    strata.run this,
+      host:   @settings.host
+      port:   @settings.port
+      socket: @settings.socket
 
 methods =
   get: ['GET', 'HEAD'],

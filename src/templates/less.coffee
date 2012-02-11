@@ -14,16 +14,13 @@ compile = (path, context) ->
   yield()
 
 view: (name, context) ->
-  headers = {'Content-Type': 'text/css'}
-  path    = @resolve(name)
-
-  [200, headers, compile(path, context)]
+  @contentType = 'text/css'
+  path         = @resolve(name)
+  compile(path, context)
 
 require.extensions['.less'] = (module, filename) ->
 
 context.include
   less: view
 
-module.exports =
-  less: view
-  compile: compile
+module.exports = compile

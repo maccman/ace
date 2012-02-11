@@ -1,27 +1,26 @@
 path    = require('path')
+mu      = require('mu')
 context = require('../context')
-Mu      = require('mu')
 
 compile = (path, context) ->
   fiber = Fiber.current
-  Mu.compile path, (err, parsed) ->
+  fs.readFile path, 'utf8', (err, data) ->
     fiber.throwInto(err) if err
 
-    fiber.run(Mu.render(template, context))
+    fiber.run mu.compileText(data)(context)
   yield()
 
 view = (name, context) ->
-  headers = {'Transfer-Encoding': 'chunked', 'Content-Type': 'text/html'}
-  path    = @resolve(name)
-
-  [200, headers, compile(path, context)]
+  @headers['Transfer-Encoding'] = 'chunked'
+  @headers['Content-Type']      = 'text/html'
+  path = @resolve(name)
+  compile(path, context)
 
 # So require.resolve works correctly
 require.extensions['.mustache'] = (module, filename) ->
+require.extensions['.mu'] = (module, filename) ->
 
 context.include
   mustache: view
 
-module.exports =
-  mustache: view
-  compile: compile
+module.exports = compile

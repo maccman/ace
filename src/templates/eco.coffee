@@ -12,14 +12,10 @@ compile = (path, context) ->
   yield()
 
 view = (name, context) ->
-  headers = {'Content-Type': 'text/html'}
-  path    = @resolve(name)
-
-  [200, headers, compile(path, context)]
+  path = @resolve(name)
+  compile(path, context)
 
 context.include
   eco: view
 
-module.exports =
-  eco: view
-  compile: compile
+module.exports = compile

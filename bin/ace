@@ -28,9 +28,4 @@ process.chdir(path.dirname(filename))
 var app = new App;
 global.app = app;
 require(filename);
-
-strata.run(app, {
-  host:   app.settings.host,
-  port:   app.settings.port,
-  socket: app.settings.socket
-});
+app.serve();

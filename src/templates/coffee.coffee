@@ -12,14 +12,11 @@ compile = (path) ->
   yield()
 
 view = (name, context) ->
-  headers = {'Content-Type': 'text/javascript'}
-  path    = @resolve(name)
-
-  [200, headers, compile(path, context)]
+  @contentType = 'text/javascript'
+  path = @resolve(name)
+  compile(path, context)
 
 context.include
   coffee: view
 
-module.exports =
-  coffee: view
-  compile: compile
+module.exports = compile

@@ -14,10 +14,9 @@ compile = (path, context) ->
   yield()
 
 view = (name, context) ->
-  headers = {'Content-Type': 'text/css'}
-  path    = @resolve(name)
-
-  [200, headers, compile(path, context)]
+  @contentType = 'text/css'
+  path         = @resolve(name)
+  compile(path, context)
 
 # So require.resolve works correctly
 require.extensions['.styl'] = (module, filename) ->
@@ -26,6 +25,4 @@ context.include
   stylus: view
   styl: view
 
-module.exports =
-  stylus: view
-  compile: compile
+module.exports = compile

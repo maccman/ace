@@ -1,17 +1,11 @@
 Sequelize = require('sequelize')
 sequelize = new Sequelize('mydb', 'root')
-Project   = sequelize.define('Project', {
+Project   = sequelize.define('Project', 
   name: Sequelize.STRING,
   description: Sequelize.TEXT
-})
+)
 
-# TODO CRUD with auth. Think about:
-# - picking up local npm deps
-#
-# app.set sessions: true
-# app.set static: true
-#
-# app.error type, ->
+Project.sync()
 
 app.before '/users/*', ->
   console.log 'before'
@@ -27,6 +21,8 @@ app.get '/sessions', ->
 
 app.get '/test', ->
   'test'
+  
+app.rewrite '/google', '/redirect'
 
 app.get '/redirect', ->
   @redirect 'http://google.com'

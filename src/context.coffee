@@ -4,38 +4,80 @@ class Context
   @include: (obj) ->
     @::[key] = value for key, value of obj
 
-  constructor: (@env, @callback, @app = {}) ->
-    @request = new strata.Request(@env)
-
-  response: (response) ->
-    return false if response is false
-    return false if @served
-    @served = true
-
-    if Array.isArray(response)
-      @callback(response...)
-    else if response?.body?
-      @callback(
-        response.status or 200,
-        response.headers or {},
-        response.body or ''
-      )
-    else
-      @callback(200, {}, response or '')
-
-  @::__defineGetter__ 'cookies',  -> @request.cookies.bind(@request).wait()
-  @::__defineGetter__ 'params',   -> @request.params.bind(@request).wait()
-  @::__defineGetter__ 'query',    -> @request.query.bind(@request).wait()
-  @::__defineGetter__ 'body',     -> @request.body.bind(@request).wait()
-  @::__defineGetter__ 'route',    -> @env.route
-  @::__defineGetter__ 'settings', -> @app.settings
-  @::__defineGetter__ 'session',  -> @env.session
-  @::__defineSetter__ 'session',  (value) -> @env.session = value
-
   @wrap: (app, base) ->
     (env, callback) ->
       context = new Context(env, callback, base)
-      result  = app.call context, env, callback
-      context.response(result)
+      result  = app.call(context, env, callback)
+      context.send(result)
+
+  constructor: (@env, @callback, @app = {}) ->
+    @request  = new strata.Request(@env)
+    @response = new strata.Response
+
+  send: (result) ->
+    return false if result is false
+    return false if @served
+    @served = true
+
+    if Array.isArray(result)
+      @response.status  = result[0]
+      @response.headers = result[1]
+      @response.body    = result[3]
+      
+    else if typeof result is 'integer'
+      @response.status = result
+
+    else if result instanceof strata.Response
+      @response = result
+
+    else
+      @response.body = result
+
+    @response.send(@callback)
+
+  setter: @::__defineSetter__
+  getter: @::__defineGetter__
+
+  @::getter 'cookies', -> 
+    @request.cookies.bind(@request).wait()
+  
+  @::getter 'params', -> 
+    @request.params.bind(@request).wait()
+    
+  @::getter 'query', -> 
+    @request.query.bind(@request).wait()
+  
+  @::getter 'body', -> 
+    @request.body.bind(@request).wait()
+  
+  @::getter 'route', -> 
+    @env.route
+  
+  @::getter 'settings', -> 
+    @app.settings
+
+  @::getter 'session', -> 
+    @env.session or= {}
+  
+  @::setter 'session', (value) -> 
+    @env.session = value
+
+  @::getter 'status', -> 
+    @response.status
+  
+  @::setter 'status', (value) -> 
+    @response.status = value
+
+  @::getter 'headers', -> 
+    @response.headers
+  
+  @::setter 'contentType',  (value) -> 
+    @response.headers['Content-Type'] = value
+  
+  @::setter 'body', (value) -> 
+    @response.body = value  
+
+  accept: (type) -> 
+    @request.accept(type)  
 
 module.exports = Context
