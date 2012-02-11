@@ -1,13 +1,14 @@
 Sequelize = require('sequelize')
 sequelize = new Sequelize('mydb', 'root')
 
-Post = sequelize.define('Post', 
+Post = sequelize.define('Post', {
   name: Sequelize.STRING,
   body: Sequelize.TEXT
-)
-
-# Post.__defineGetter__  'url', -> '/posts'
-# Post::__defineGetter__ 'url', -> '/posts/' + @id
+  }, {
+    url: -> '/posts'
+  }, {
+    url: -> '/posts/' + @id
+})
 
 Post.sync()
 
@@ -19,25 +20,25 @@ app.before '/posts/:id', ->
   @ok
 
 app.before ->
-  if @request.method in ['post', 'put', 'delete']
+  if @request.method isnt 'GET'
     @authBasic (user, pass) ->
-      @settings[user] is pass
+      @settings.credentials[user] is pass
   else
     @ok
 
 app.get '/posts', ->
   posts = Post.all().wait()
   @eco 'posts/index', posts: posts
-  
+
 app.get '/posts/:id', ->
   @eco 'posts/show', @post
 
 app.get '/posts/new', ->
   @eco 'posts/new'
-  
+
 app.get '/posts/:id/edit', ->
   @eco 'posts/edit', @post
-  
+
 app.post '/posts', ->
   post = Post.create(@params.post).wait()
   @redirect post

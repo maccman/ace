@@ -9,7 +9,7 @@ passes = (env, conditions) ->
   if conditions is true
     true
 
-  if typeof conditions is 'function'
+  else if typeof conditions is 'function'
     conditions(env)
 
   else if typeof conditions is 'string'

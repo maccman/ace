@@ -1,6 +1,6 @@
 Sequelize = require('sequelize')
 sequelize = new Sequelize('mydb', 'root')
-Project   = sequelize.define('Project', 
+Project   = sequelize.define('Project',
   name: Sequelize.STRING,
   description: Sequelize.TEXT
 )
@@ -21,7 +21,7 @@ app.get '/sessions', ->
 
 app.get '/test', ->
   'test'
-  
+
 app.rewrite '/google', '/redirect'
 
 app.get '/redirect', ->
