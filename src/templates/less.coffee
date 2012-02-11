@@ -18,7 +18,7 @@ view: (name, context) ->
   path         = @resolve(name)
   compile(path, context)
 
-require.extensions['.less'] = (module, filename) ->
+require.extensions['.less'] or= (module, filename) ->
 
 context.include
   less: view

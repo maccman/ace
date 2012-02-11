@@ -19,7 +19,7 @@ view = (name, context) ->
   compile(path, context)
 
 # So require.resolve works correctly
-require.extensions['.styl'] = (module, filename) ->
+require.extensions['.styl'] or= (module, filename) ->
 
 context.include
   stylus: view

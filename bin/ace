@@ -23,7 +23,12 @@ if ( !filename ) {
 }
 
 filename = path.resolve(filename);
-process.chdir(path.dirname(filename))
+process.chdir(path.dirname(filename));
+
+// Use local ace module if available
+if (fs.existsSync('./node_modules/.bin/ace')) {
+  return Module._load('./node_modules/.bin/ace');
+}
 
 var app = new App;
 global.app = app;
