@@ -7,8 +7,11 @@ class Context
   @wrap: (app, base) ->
     (env, callback) ->
       context = new Context(env, callback, base)
-      result  = app.call(context, env, callback)
-      context.send(result)
+      try
+        result = app.call(context, env, callback)
+        context.send(result)
+      catch err
+        strata.handleError(err, env, callback)
 
   constructor: (@env, @callback, @app = {}) ->
     @request  = new strata.Request(@env)
