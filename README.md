@@ -1,5 +1,8 @@
 ##Usage
 
+    npm install -g ace
+
+    ace myapp.js
     ace myapp.coffee
 
 ##Response

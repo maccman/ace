@@ -15,7 +15,36 @@ try {
   require('coffee-script');
 } catch(e) { }
 
-filename = argv[0];
+var copy = function(from, to){
+  var data = fs.readFileSync(from, 'utf8');
+  fs.writeFileSync(to, data, 'utf8');
+};
+
+var command  = argv[0];
+var filename = argv[1];
+
+if (filename) {
+  filename = path.resolve(filename);
+}
+
+if (command === 'new' && filename) {
+  fs.mkdirSync(filename, 0775);
+  fs.mkdirSync(filename + '/public', 0775);
+  fs.mkdirSync(filename + '/views', 0775);
+
+  var generatorPath = path.join(
+    __dirname, '..', 'generators'
+  );
+
+  copy(path.join(generatorPath, 'package.json'),
+       path.join(filename, 'package.json'));
+  copy(path.join(generatorPath, 'app.coffee'),
+       path.join(filename, 'app.coffee'));
+  copy(path.join(generatorPath, 'layout.eco'),
+       path.join(filename, 'views', 'layout.eco'));
+  console.log('Generated: ' + filename);
+  return;
+}
 
 if ( !filename ) {
   try {
@@ -31,11 +60,11 @@ if ( !filename ) {
 
 if ( !filename ) {
   console.log("Ace usage:");
-  console.log("\tace PATH");
+  console.log("\tace new PATH");
+  console.log("\tace server PATH");
   return;
 }
 
-filename = path.resolve(filename);
 process.chdir(path.dirname(filename));
 
 var app = new App;
