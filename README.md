@@ -1,4 +1,4 @@
-Ace is [Sinatra](http://www.sinatrarb.com/) for Node, a simple web-server with a straightforward API.
+Ace is [Sinatra](http://www.sinatrarb.com/) for Node; a simple web-server, written in CoffeeScript, with a straightforward API.
 
 Every request is wrapped in a [Node Fiber](https://github.com/laverdet/node-fibers), allowing you to program in a synchronous manner without callbacks, but with all the advantages of an asynchronous web-server.
 
@@ -14,6 +14,7 @@ To generate a new app, run:
 
     ace new myapp
     cd myapp
+    npm install .
 
 To serve up an app, run:
 
@@ -32,6 +33,10 @@ You can also specify a routing pattern, which is available in the callback under
 
     app.get '/users/:name', ->
       "Hello #{@route.name}"
+
+##Request
+
+
 
 ##Responses
 
@@ -100,13 +105,15 @@ You can serve up JSON and JSONP with the `@json` and `@jsonp` helpers respective
       @users = User.all().wait()
       @jsonp @users
 
-By default, `@jsonp` uses the `@params.callback` parameter as the name of its wrapper function.
+By default `@jsonp` uses the `@params.callback` parameter as the name of its wrapper function.
 
 ##Fibers
 
-    exists = fs.exists.bind(fs)
+Every request in Ace is wrapped in a Fiber. This means you can do away with the callback spaghetti that Node applications often descend it. Rather than use callbacks, you can simply pause the current fiber. When the callback returns, the fibers execution continues from where it left off.
 
-    @sleep()
+In practice, Ace provides a couple of utility functions for pausing asynchronous functions. Ace adds a `wait()` function to `EventEmitter`. This transforms asynchronous calls on libraries such as [Sequelize](http://sequelizejs.com).
+
+For example, `save()` is usually an asynchronous call which requires a callback. Here we can just call `save().wait()` and use a synchronous style.
 
     app.get '/projects', ->
       project = Project.build(
@@ -115,22 +122,63 @@ By default, `@jsonp` uses the `@params.callback` parameter as the name of its wr
 
       project.save().wait()
 
+      @sleep(2000)
+
       "Saved project: #{project.id}"
 
+This fiber technique also means we can implement functionality like `sleep()` in JavaScript, as in the previous example.
+
+You can make an existing asynchronous function fiber enabled, by wrapping it with `Function::wait()`.
+
+    fiberExists = fs.exists.bind(fs).wait
+
+    if fiberExists('./path/to/file')
+      @sendFile('./path/to/file)
+
 ##Cookies & Session
+
+Sessions are enabled by default in Ace. You can set and retrieve data stored in the session by using the `@session` object:
 
     app.get '/login', ->
       user = User.find(email: @params.email).wait()
       @session.user_id = user.id
       @redirect '/'
 
+You can retrieve cookies via the `@cookie` object, and set them with `@response.setCookie(name, value)`;
+
+    app.get '/login', ->
+      token = @cookies.rememberMe
+      # ...
+
 ##Filters
+
+Ace supports 'before' filters, callbacks that are executed before route handlers.
 
     app.before ->
       # Before filter
 
+By default before filters are always executed. You can specify conditions to limit that, such as routes.
+
     app.before '/users*', ->
+
+The previous filter will be executed before any routes matching `/users*` are.
+
+As well as a route, you can specify a object to match the request against:
+
+    app.before method: 'POST', ->
+      ensureLogin()
+
+Finally you can specify a conditional function that'll be passed the request's `env`, and should return a boolean indicating whether the filter should be executed or not.
+
     app.before conditionFunction, ->
+
+If a filter changes the response status to anything other than 200, then execution will halt.
+
+    app.before ->
+      if @request.method isnt 'GET' and !@session.user
+        @head 401
+
+##Context
 
     app.context.include
       loggedIn: -> !!@session.user_id
@@ -145,6 +193,16 @@ By default, `@jsonp` uses the `@params.callback` parameter as the name of its wr
 
     @app.set sessions: true
              port: 3000
+
+             static:   true
+             sessions: true
+             port:     1982
+             bind:     '0.0.0.0'
+             views:    './views'
+             assets:   './assets'
+             public:   './public'
+             layout:   'layout'
+             logging:  true
 
 ##Helpers
 
