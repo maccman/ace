@@ -13,9 +13,10 @@ json = (object) ->
 jsonp = (object, options = {}) ->
   cb = options.callback
   cb or= @params.callback
-  cb or= 'callback'
 
-  json(({})[cb] = object)
+  result = @json object
+  result = "#{cb}(#{result})" if cb
+  result
 
 context.include
   json: json

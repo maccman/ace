@@ -2,7 +2,19 @@ Ace is [Sinatra](http://www.sinatrarb.com/) for Node; a simple web-server, writt
 
 Every request is wrapped in a [Node Fiber](https://github.com/laverdet/node-fibers), allowing you to program in a synchronous manner without callbacks, but with all the advantages of an asynchronous web-server.
 
-Ace is built on the the rock solid [Strata HTTP framework](http://stratajs.org/).
+    app.put '/posts/:id', ->
+      @post = Post.find(+@route.id).wait()
+      @post.updateAttributes(
+        name: @params.name,
+        body: @params.body
+      ).wait()
+      @redirect @post
+
+Ace is built on top of the rock solid [Strata HTTP framework](http://stratajs.org/).
+
+##Examples
+
+You can find an example blog app, including authentication and updating posts, in Ace's [examples directory](https://github.com/maccman/ace/tree/master/examples).
 
 ##Usage
 
@@ -36,22 +48,58 @@ You can also specify a routing pattern, which is available in the callback under
     app.get '/users/:name', ->
       "Hello #{@route.name}"
 
+POST, PUT and DELETE callbacks are also available, using the `post`, `put` and `del` methods respectively:
+
+    app.post '/users', ->
+      @user = User.create(
+        name: @params.name
+      ).wait()
+      @redirect "/users/#{@user.id}"
+
+    app.put '/users/:id', ->
+      @user = User.find(+@route.id).wait()
+      @user.updateAttributes(
+        name: @params.name
+      ).wait()
+      @redirect "/users/#{@user.id}"
+
+    app.del '/user/:id', ->
+      @user = User.find(+@route.id).wait()
+      @user.destroy().wait()
+      @redirect "/users"
+
 ##Request
 
-TODO
+You can access request information using the `@request` object.
 
-    @request.protocol
-    @request.method
-    @request.remoteAddr
-    @request.pathInfo
-    @request.contentType
-    @request.xhr
-    @request.host
-    @request.body
+    app.get '/request', ->
+      result =
+        protocol:     @request.protocol
+        method:       @request.method
+        remoteAddr:   @request.remoteAddr
+        pathInfo:     @request.pathInfo
+        contentType:  @request.contentType
+        xhr:          @request.xhr
+        host:         @request.host
 
-    @accepts('application/json')
-    @body
+      @json result
 
+For more information, see [request.js](https://github.com/mjijackson/strata/blob/master/lib/request.js).
+
+You can access the full request body via `@body`:
+
+    app.get '/body', ->
+      "You sent: #{@body}"
+
+You can check to see what the request accepts in response:
+
+    app.get '/users', ->
+      @users = User.all().wait()
+
+      if @accepts('application/json')
+        @jsonp @users
+      else
+        @eco 'users/list'
 
 You can also access the raw `@env` object:
 
@@ -69,9 +117,10 @@ As well as returning the response body as a string from the routing callback, yo
 
 You can set the `@headers`, `@status` and `@body` attributes to alter the request's response.
 
-If you only need to set the status code, you can just return it directly from the routing callback. The properties `@ok`, `@unauthorized` and `@notFound` are aliased to the relevant status codes.
+If you only need to set the status code, you can just return it directly from the routing callback. The properties `@ok`, `@unauthorized` and `@notFound` are aliased to their relevant status codes.
 
     app.get '/render', ->
+      # ...
       @ok
 
 ##Parameters
@@ -243,7 +292,21 @@ Settings are available on the `@settings` object:
 
 ##Middleware
 
-TODO
+Middleware sits on the request stack, and gets executed before any of the routes. Using middleware, you can alter the request object such as HTTP headers or the request's path.
+
+Ace sits on top of [Strata](http://stratajs.org/), so you can use any of the middleware that comes with the framework, or create your own.
+
+For example, we can use Ace's [methodOverride](https://github.com/mjijackson/strata/blob/master/lib/methodoverride.js) middleware, enabling us to override the request's HTTP method with a `_method` parameter.
+
+    strata = require('ace').strata
+    app.use strata.methodOverride
+
+This means we can use HTML forms to send requests other than `GET` or `POST` ones, keeping our application RESTful:
+
+    <form action="<%= @post.url() %>" method="post">
+      <input type="hidden" name="_method" value="delete">
+      <button>Delete</button>
+    </form>
 
 ##Credits
 

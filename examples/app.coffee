@@ -10,6 +10,7 @@ Post = sequelize.define('Post', {
       url: -> '/posts'
     instanceMethods:
       url: -> '/posts/' + @id
+      toJSON: -> @values
 )
 
 Post.sync()
@@ -36,7 +37,10 @@ app.get '/logout', ->
 
 app.get '/posts', ->
   @posts = Post.all().wait()
-  @eco 'posts/index'
+  if @acceptsJSON
+    @jsonp @posts
+  else
+    @eco 'posts/index'
 
 app.get '/posts/new', ->
   @eco 'posts/new'

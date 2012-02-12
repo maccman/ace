@@ -93,4 +93,7 @@ class Context
   accept: (type) ->
     @request.accept(type)
 
+  @::getter 'acceptsJSON', ->
+    @request.accept('application/json')
+
 module.exports = Context
