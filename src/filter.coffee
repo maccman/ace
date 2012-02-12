@@ -36,24 +36,26 @@ passes = (env, conditions) ->
 
     false
 
-module.exports = (app, conditions, filter, base) ->
+module.exports = (app, filters, base) ->
   (env, callback) ->
     app env, ->
       original = arguments
 
-      if passes(env, conditions)
-        filterCallback = (status) ->
-          # If the filter returns a status code other
-          # than 200, then callback with the data
-          # from the filter, otherwise carry on with
-          # the original request.
+      # If the filter returns a status code other
+      # than 200, then callback with the data
+      # from the filter, otherwise carry on with
+      # the original request.
+      proxiedCallback = (status) ->
+        if @status is 200
+          callback(original...)
+        else
+          callback(arguments...)
 
-          if @status is 200
-            callback(original...)
-          else
-            callback(arguments...)
+      for filter in filters
+        [conditions, filterCallback] = filter
 
-        context.wrap(filter, base)(env, filterCallback)
-
-      else
-        callback(original...)
+        if passes(env, conditions)
+          context.wrap(filterCallback, base)(env, proxiedCallback)
+        else
+          callback(original...)
+          break

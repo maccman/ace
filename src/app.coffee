@@ -18,6 +18,7 @@ class App extends strata.Builder
     assets:   './assets'
     public:   './public'
     layout:   'layout'
+    logging:  true
 
   context: context
   resolve: templates.resolve
@@ -38,16 +39,13 @@ class App extends strata.Builder
     @pool   = new fibers.Pool
     @router = new strata.Router
 
-    @use(strata.commonLogger)
-    @use(strata.contentType, 'text/html')
-    @use(strata.contentLength)
-
   before: (conditions, callback) ->
     unless callback
       callback   = conditions
       conditions = true
 
-    @use(filter, conditions, callback)
+    @beforeFilters ||= []
+    @beforeFilters.push([conditions, callback])
 
   rewrite: (pattern, replacement) ->
     @use(strata.rewrite, pattern, replacement)
@@ -68,20 +66,26 @@ class App extends strata.Builder
     else
       @settings[key] = value
 
-  useSessions: ->
-    options = {}
-    if typeof @settings.sessions is 'object'
-      options = @settings.sessions
-    @use(strata.sessionCookie, options)
-
-  useStatic: ->
-    @use(static, @settings.public, ['index.html'])
-
   toApp: ->
-    @useSessions() if @settings.sessions
-    @useStatic()   if @settings.static
+    @use(strata.contentType, 'text/html')
+
+    @use(strata.contentLength)
+
+    if @settings.logging
+      @use(strata.commonLogger)
+
+    if options = @settings.sessions
+      options = {} if options is true
+      @use(strata.sessionCookie, options)
+
+    if @settings.static
+      @use(static, @settings.public, ['index.html'])
+
+    @use(filter, @beforeFilters, this)
+
     @run (env, callback) =>
       @pool.wrap(@router.toApp())(env, callback)
+
     super
 
   serve: ->
