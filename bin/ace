@@ -19,13 +19,13 @@ filename = argv[0];
 
 if ( !filename ) {
   try {
-    filename = require.resolve('./index');
+    filename = require.resolve(path.resolve('app'));
   } catch (e) {}
 }
 
 if ( !filename ) {
   try {
-    filename = require.resolve('./app');
+    filename = require.resolve(path.resolve('index'));
   } catch (e) {}
 }
 
