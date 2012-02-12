@@ -55,7 +55,6 @@ module.exports = (app, filters, base) ->
         [conditions, filterCallback] = filter
 
         if passes(env, conditions)
-          context.wrap(filterCallback, base)(env, proxiedCallback)
-        else
-          callback(original...)
-          break
+          return context.wrap(filterCallback, base)(env, proxiedCallback)
+
+      callback(original...)

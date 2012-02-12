@@ -81,7 +81,8 @@ class App extends strata.Builder
     if @settings.static
       @use(static, @settings.public, ['index.html'])
 
-    @use(filter, @beforeFilters, this)
+    if @beforeFilters
+      @use(filter, @beforeFilters, this)
 
     @run (env, callback) =>
       @pool.wrap(@router.toApp())(env, callback)
