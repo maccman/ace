@@ -65,7 +65,6 @@ app.put '/posts/:id', ->
   @redirect @post
 
 app.del '/posts/:id', ->
-  console.log 'here'
   @post = Post.find(+@route.id).wait()
   @post.destroy().wait()
   @redirect Post
