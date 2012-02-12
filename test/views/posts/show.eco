@@ -1,3 +1,20 @@
-<h2><%= @name %></h2>
+<header>
+  <h1><%= @post.name %></h1>
+</header>
 
-<p><%= @body %></p>
+<article>
+  <p><%= @post.body %></p>
+
+  <a href="/posts">Back</a>
+
+  <% if @session.user: %>
+
+    <a href="<%= @post.url() %>/edit">Edit</a>
+
+    <form action="<%= @post.url() %>" method="post">
+      <input type="hidden" name="_method" value="delete">
+      <button>Delete</button>
+    </form>
+
+  <% end %>
+</article>

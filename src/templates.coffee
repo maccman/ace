@@ -4,13 +4,12 @@ context = require('./context')
 for name in ['coffee', 'eco', 'ejs', 'json', 'less', 'mustache', 'stylus']
   try require("./templates/#{name}")
 
-resolve = (name, raise = true) ->
-  console.log path.resolve(@settings.views, name)
+resolve = (name, defaultPath) ->
   try return require.resolve(name)
   try return require.resolve(path.resolve(@settings.views, name))
   try return require.resolve(path.resolve(@settings.assets, name))
-  throw "Cannot find #{name}" if raise
-  false
+  return defaultPath if defaultPath?
+  throw "Cannot find #{name}"
 
 context.include
   resolve: resolve

@@ -1,6 +1,21 @@
-<form action="<%= @post.url() %>" method="post">
-  <label for=""></label><input type="text/submit/hidden/button" name="" value="" id="">
+<header>
+  <h1>Edit Post</h1>
+</header>
 
+<article>
+  <form action="<%= @post.url() %>" method="post">
+    <input type="hidden" name="_method" value="put">
 
-  <button>Save</button>
-</form>
+    <label>
+      <span>Name</span>
+      <input type="text" name="name" value="<%= @post.name %>">
+    </label>
+
+    <label>
+      <span>Body</span>
+      <textarea name="body"><%= @post.body %></textarea>
+    </label>
+
+    <button>Save</button>
+  </form>
+</article>

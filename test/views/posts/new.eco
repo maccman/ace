@@ -1,0 +1,19 @@
+<header>
+  <h1>New Post</h1>
+</header>
+
+<article>
+  <form action="/posts" method="post">
+    <label>
+      <span>Name</span>
+      <input type="text" name="name" value="">
+    </label>
+
+    <label>
+      <span>Body</span>
+      <textarea name="body"></textarea>
+    </label>
+
+    <button>Save</button>
+  </form>
+</article>

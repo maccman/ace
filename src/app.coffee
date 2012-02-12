@@ -20,6 +20,7 @@ class App extends strata.Builder
     layout:   'layout'
 
   context: context
+  resolve: templates.resolve
 
   constructor: ->
     super()
@@ -27,7 +28,7 @@ class App extends strata.Builder
     @settings = {}
     @set @defaults
 
-    @settings.layout = templates.resolve(
+    @settings.layout = @resolve(
       @settings.layout, false
     )
 
@@ -97,8 +98,8 @@ methods =
   head: 'HEAD',
   options: 'OPTIONS'
 
-for method of methods
-  App::[method] = do (method) ->
+for type, method of methods
+  App::[type] = do (method) ->
     (args...) -> @route(args..., method)
 
 module.exports = App

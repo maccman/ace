@@ -36,7 +36,11 @@ class Context
     else if typeof result is 'string'
       @response.body = result
 
-    @response.send(@callback)
+    @callback(
+      @response.status,
+      @response.headers,
+      @response.body
+    )
 
   setter: @::__defineSetter__
   getter: @::__defineGetter__
@@ -74,7 +78,10 @@ class Context
   @::getter 'headers', ->
     @response.headers
 
-  @::setter 'contentType',  (value) ->
+  @::setter 'headers', (value) ->
+    @response.headers = value
+
+  @::setter 'contentType', (value) ->
     @response.headers['Content-Type'] = value
 
   @::setter 'body', (value) ->

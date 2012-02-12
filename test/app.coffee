@@ -1,27 +1,26 @@
 Sequelize = require('sequelize')
-sequelize = new Sequelize('mydb', 'root')
+strata    = require('strata')
 
+sequelize = new Sequelize('mydb', 'root')
 Post = sequelize.define('Post', {
-  name: Sequelize.STRING,
-  body: Sequelize.TEXT
-  }, {
-    url: -> '/posts'
-  }, {
-    url: -> '/posts/' + @id
-  }
+    name: Sequelize.STRING,
+    body: Sequelize.TEXT
+  },
+    classMethods:
+      url: -> '/posts'
+    instanceMethods:
+      url: -> '/posts/' + @id
 )
 
 Post.sync()
+
+app.use strata.methodOverride
 
 app.set credentials: {dragon: 'slayer'}
 
 app.before ->
   if @request.method isnt 'GET' and !@session.user
     @redirect '/login'
-
-app.before ['/posts/:id', '/post/:id/*'], ->
-  @post = Post.find(@route.id).wait()
-  @ok
 
 app.get '/login', ->
   success = @basicAuth (user, pass) ->
@@ -33,29 +32,41 @@ app.get '/login', ->
 
 app.get '/logout', ->
   @session = {}
+  @redirect '/'
 
 app.get '/posts', ->
   @posts = Post.all().wait()
   @eco 'posts/index'
 
-app.get '/posts/:id', ->
-  @eco 'posts/show'
-
 app.get '/posts/new', ->
   @eco 'posts/new'
 
+app.get '/posts/:id', ->
+  @post = Post.find(+@route.id).wait()
+  @eco 'posts/show'
+
 app.get '/posts/:id/edit', ->
+  @post = Post.find(+@route.id).wait()
   @eco 'posts/edit'
 
 app.post '/posts', ->
-  post = Post.create(@params.post).wait()
-  @redirect post
+  @post = Post.create(
+    name: @params.name,
+    body: @params.body
+  ).wait()
+  @redirect @post
 
 app.put '/posts/:id', ->
-  @post.updateAttributes(@params.post).wait()
-  @redirect post
+  @post = Post.find(+@route.id).wait()
+  @post.updateAttributes(
+    name: @params.name,
+    body: @params.body
+  ).wait()
+  @redirect @post
 
 app.del '/posts/:id', ->
+  console.log 'here'
+  @post = Post.find(+@route.id).wait()
   @post.destroy().wait()
   @redirect Post
 

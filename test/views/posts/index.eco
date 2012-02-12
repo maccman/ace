@@ -1,9 +1,19 @@
-<h1>Listing Posts</h1>
+<header>
+  <h1>Listing Posts</h1>
+</header>
 
-<ul>
-<% for post in @posts: %>
-  <li>
-    <a href="<%- post.url() %>"><%= post.name %></a>
-  </li>
-<% end %>
-</ul>
+<article>
+  <ul>
+  <% for post in @posts: %>
+    <li>
+      <a href="<%- post.url() %>"><%= post.name %></a>
+    </li>
+  <% end %>
+  </ul>
+
+  <% if @session.user: %>
+    <a href="/posts/new">New Post</a>
+  <% else: %>
+    <a href="/login">Login</a>
+  <% end %>
+</article>

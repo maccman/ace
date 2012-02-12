@@ -28,27 +28,22 @@ sendFile = (file, options = {}) ->
 head = (status = 200) ->
   @status = status
 
-redirect = (location, status = 302) ->
+redirect = (location, status) ->
   location = location.url?() or location.url or location
-  content  = "<p>You are being redirected to <a href=\"#{location}\">#{location}</a>.</p>"
-  @status  = status
-  @headers['Location'] = location
+  @response.redirect(location, status)
 
 basicAuth = (callback, realm = 'Authorization Required') ->
   unauthorized = =>
-    headers =
-      'Content-Type': 'text/plain'
-      'WWW-Authenticate': "Basic realm='#{realm}'"
-
-    @status  = 401
-    @headers = headers
-    @body    = 'Unauthorized'
+    @status      = 401
+    @contentType = 'text/plain'
+    @headers['WWW-Authenticate'] = "Basic realm='#{realm}'"
+    @body        = 'Unauthorized'
     false
 
-  auth = env.httpAuthorization
+  auth = @env.httpAuthorization
   return unauthorized() unless auth
 
-  [scheme, creds] = authorization.split(' ')
+  [scheme, creds] = auth.split(' ')
   return @head(@badRequest) if scheme.toLowerCase() != 'basic'
 
   [user, pass] = new Buffer(creds, 'base64').toString().split(':')

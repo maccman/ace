@@ -1,9 +1,12 @@
 #!/usr/bin/env node
 
-var vm   = require('vm'),
-    path = require('path'),
+// Use local ace module if available
+// if (fs.existsSync('./node_modules/.bin/ace')) {
+//   return Module._load('./node_modules/.bin/ace');
+// }
+
+var path = require('path'),
     fs   = require('fs'),
-    strata = require('strata'),
     argv = process.argv.slice(2),
     App  = require('../lib/app');
 
@@ -17,6 +20,18 @@ try {
 filename = argv[0];
 
 if ( !filename ) {
+  try {
+    filename = require.resolve('./index');
+  } catch (e) {}
+}
+
+if ( !filename ) {
+  try {
+    filename = require.resolve('./app');
+  } catch (e) {}
+}
+
+if ( !filename ) {
   console.log("Ace usage:");
   console.log("\tace PATH");
   return;
@@ -24,11 +39,6 @@ if ( !filename ) {
 
 filename = path.resolve(filename);
 process.chdir(path.dirname(filename));
-
-// Use local ace module if available
-if (fs.existsSync('./node_modules/.bin/ace')) {
-  return Module._load('./node_modules/.bin/ace');
-}
 
 var app = new App;
 global.app = app;

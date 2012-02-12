@@ -5,6 +5,8 @@
   <link rel="stylesheet" href="/application.css" type="text/css">
 </head>
 <body>
-  <%- @body %>
+  <div id="app">
+    <%- @body %>
+  </div>
 </body>
 </html>
