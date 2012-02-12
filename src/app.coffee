@@ -6,6 +6,7 @@ context   = require('./context')
 static    = require('./static')
 filter    = require('./filter')
 templates = require('./templates')
+format    = require('./format')
 
 class App extends strata.Builder
   defaults:
@@ -80,6 +81,8 @@ class App extends strata.Builder
 
     if @settings.static
       @use(static, @settings.public, ['index.html'])
+
+    @use(format)
 
     if @beforeFilters
       @use(filter, @beforeFilters, this)

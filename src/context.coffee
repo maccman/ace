@@ -90,10 +90,19 @@ class Context
   @::setter 'body', (value) ->
     @response.body = value
 
-  accept: (type) ->
-    @request.accept(type)
+  accepts: (type) ->
+    @request.accepts(type)
+
+  @::getter 'format', ->
+    @env.format
 
   @::getter 'acceptsJSON', ->
-    @request.accept('application/json')
+    JSONMime = 'application/json'
+    return true if @env.format is JSONMime
+
+    # Check to see if JSON is explicitly
+    # mentioned in the accept header
+    accept = @request.accept or ''
+    accept.indexOf(JSONMime) != -1
 
 module.exports = Context

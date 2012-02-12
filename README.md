@@ -22,7 +22,9 @@ Node >= v0.7.3 is required, as well as npm. Ace will run on older versions of No
 
 To install, run:
 
-    npm install -g ace
+    npm install -g git://github.com/maccman/ace.git
+
+<!-- npm install -g ace -->
 
 To generate a new app, run:
 
@@ -307,6 +309,8 @@ This means we can use HTML forms to send requests other than `GET` or `POST` one
       <input type="hidden" name="_method" value="delete">
       <button>Delete</button>
     </form>
+
+For more information on creating your own middleware, see [Strata's docs](http://stratajs.org/manual/5).
 
 ##Credits
 
