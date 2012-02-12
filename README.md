@@ -6,7 +6,9 @@ Ace is built on the the rock solid [Strata HTTP framework](http://stratajs.org/)
 
 ##Usage
 
-Node >= v0.7.3 is required, as well as npm. To install, run:
+Node >= v0.7.3 is required, as well as npm. Ace will run on older versions of Node, but will crash under heavy load due to a bug in V8 (now fixed).
+
+To install, run:
 
     npm install -g ace
 
@@ -36,7 +38,24 @@ You can also specify a routing pattern, which is available in the callback under
 
 ##Request
 
+TODO
 
+    @request.protocol
+    @request.method
+    @request.remoteAddr
+    @request.pathInfo
+    @request.contentType
+    @request.xhr
+    @request.host
+    @request.body
+
+    @accepts('application/json')
+    @body
+
+
+You can also access the raw `@env` object:
+
+    @env['Warning']
 
 ##Responses
 
@@ -135,6 +154,10 @@ You can make an existing asynchronous function fiber enabled, by wrapping it wit
     if fiberExists('./path/to/file')
       @sendFile('./path/to/file)
 
+Fibers are pooled, and by default there's a limit of 100 fibers in the pool. This means that you can serve up to 100 connections simultaneously. After the pool limit is reached, requests are queued. You can increase the pool size like so:
+
+    app.pool.size = 250
+
 ##Cookies & Session
 
 Sessions are enabled by default in Ace. You can set and retrieve data stored in the session by using the `@session` object:
@@ -180,6 +203,8 @@ If a filter changes the response status to anything other than 200, then executi
 
 ##Context
 
+You can add extra properties to the routing callback context using `context.include()`:
+
     app.context.include
       loggedIn: -> !!@session.user_id
 
@@ -189,32 +214,36 @@ If a filter changes the response status to anything other than 200, then executi
       else
         @redirect '/login'
 
+The context includes a few utilities methods by default:
+
+    @redirect(url)
+    @sendFile(path)
+    @head(status)
+
+    @basicAuth (user, pass) ->
+      user is 'foo' and pass is 'bar'
+
 ##Configuration
 
-    @app.set sessions: true
-             port: 3000
+Ace includes some sensible default settings, but you can override them using `@set`, passing in an object of names to values.
 
-             static:   true
-             sessions: true
-             port:     1982
-             bind:     '0.0.0.0'
-             views:    './views'
-             assets:   './assets'
-             public:   './public'
-             layout:   'layout'
-             logging:  true
+    @app.set static:   true       # Serve up file statically from public
+             sessions: true       # Enable sessions
+             port:     1982       # Server port number
+             bind:     '0.0.0.0'  # Bind to host
+             views:    './views'  # Path to 'views' dir
+             public:   './public' # Path to 'public' dir
+             layout:   'layout'   # Name of application's default layout
+             logging:  true       # Enable logging
 
-##Helpers
+Settings are available on the `@settings` object:
 
-    app.get '/redirect', ->
-      @redirect 'http://google.com'
+    if app.settings.logging is true
+      console.log('Logging is enabled')
 
-    @head 200
-    @ok
+##Middleware
 
-    @sendFile
-
-    @authBasic
+TODO
 
 ##Credits
 
