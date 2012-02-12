@@ -1,17 +1,14 @@
 #!/usr/bin/env node
 
-// Use local ace module if available
-// if (fs.existsSync('./node_modules/.bin/ace')) {
-//   return Module._load('./node_modules/.bin/ace');
-// }
-
 var path = require('path'),
     fs   = require('fs'),
     argv = process.argv.slice(2),
-    App  = require('../lib/app');
+    App  = require('../lib/index').App;
 
-require('../lib/ext');
-require('../lib/helpers');
+// Use local ace module if available
+if (fs.existsSync('./node_modules/.bin/ace')) {
+  return require('module')._load('./node_modules/.bin/ace');
+}
 
 try {
   require('coffee-script');

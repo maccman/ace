@@ -1,11 +1,11 @@
 {
   "name": "ace",
   "description": "Sinatra for Node",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "maccman",
   "repository": {
     "type" : "git",
-    "url": "http://github.com/maccman/bullet.git"
+    "url": "http://github.com/maccman/ace.git"
   },
   "main" : "./lib/index.js",
   "bin": { "ace": "./bin/ace" },
