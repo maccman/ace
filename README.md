@@ -200,9 +200,9 @@ This fiber technique also means we can implement functionality like `sleep()` in
 
 You can make an existing asynchronous function fiber enabled, by wrapping it with `Function::wait()`.
 
-    fiberExists = fs.exists.bind(fs).wait
+    syncExists = fs.exists.bind(fs).wait
 
-    if fiberExists('./path/to/file')
+    if syncExists('./path/to/file')
       @sendFile('./path/to/file)
 
 Fibers are pooled, and by default there's a limit of 100 fibers in the pool. This means that you can serve up to 100 connections simultaneously. After the pool limit is reached, requests are queued. You can increase the pool size like so:

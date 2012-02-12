@@ -6,15 +6,21 @@ compile = (path, context) ->
   fiber = Fiber.current
   fs.readFile path, 'utf8', (err, data) ->
     fiber.throwInto(err) if err
-
-    fiber.run mu.compileText(data)(context)
+    buffer = ''
+    stream = mu.compileText(data)(context)
+    stream.addListener 'data', (c) -> buffer += c
+    stream.addListener 'end', -> fiber.run(buffer)
   yield()
 
-view = (name) ->
-  @headers['Transfer-Encoding'] = 'chunked'
-  @headers['Content-Type']      = 'text/html'
-  path = @resolve(name)
-  compile(path, this)
+view = (name, options = {}) ->
+  path   = @resolve(name)
+  result = compile(path, this)
+
+  layout = options.layout
+  layout ?= @settings.layout
+  result = compile(layout, body: result) if layout
+
+  result
 
 # So require.resolve works correctly
 require.extensions['.mustache'] = (module, filename) ->
