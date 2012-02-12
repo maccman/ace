@@ -6,7 +6,8 @@ var path = require('path'),
     App  = require('../lib/index').App;
 
 // Use local ace module if available
-if (fs.existsSync('./node_modules/.bin/ace')) {
+if (fs.existsSync('./node_modules/.bin/ace') && !global.local) {
+  global.local = true;
   return require('module')._load('./node_modules/.bin/ace');
 }
 
