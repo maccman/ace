@@ -23,31 +23,84 @@ To serve up an app, run:
 
 In Ace, a route is a HTTP method paired with a URL matching pattern. For example:
 
-    ace.get '/users', ->
+    app.get '/users', ->
       'Hello World'
 
 Anything returned from a routing callback is set as the response body.
 
 You can also specify a routing pattern, which is available in the callback under the `@route` object.
 
-    ace.get '/users/:name', ->
+    app.get '/users/:name', ->
       "Hello #{@route.name}"
 
 ##Responses
 
-As well as returning the response body as a string, you
+As well as returning the response body as a string from the routing callback, you can set the response attributes directly:
 
-    @response [200, {}, '']
-    @response ''
-    @response ->
+    app.get '/render', ->
+      @headers['Transfer-Encoding'] = 'chunked'
+      @contentType = 'text/html'
+      @status = 200
+      @body = 'my body'
+
+You can set the `@headers`, `@status` and `@body` attributes to alter the request's response.
+
+If you only need to set the status code, you can just return it directly from the routing callback. The properties `@ok`, `@unauthorized` and `@notFound` are aliased to the relevant status codes.
+
+    app.get '/render', ->
+      @ok
+
+##Parameters
+
+URL encoded forms, multipart uploads and JSON parameters are available via the `@params` object:
+
+    app.post '/posts', ->
+      @post = Post.create(
+        name: @params.name,
+        body: @params.body
+      ).wait()
+
+      @redirect "/posts/#{@post.id}"
 
 ##Static
 
-    @app.set public: './public'
+By default, if a folder called `public` exists under the app root, its contents will be served up statically. You can configure the path of this folder like so:
+
+    app.set public: './public'
+
+You can add static assets like stylesheets and images to the `public` folder. They'll be served up automatically.
 
 ##Templates
 
-    @eco 'test', name: @route.name
+Ace includes support for rendering CoffeeScript, Eco, EJS, Less, Mustache and Stylus templates. Simply install the relevant module and the templates will be available to render.
+
+For example, install the [eco](https://github.com/sstephenson/eco) module and the `@eco` function will be available to you.
+
+    app.get '/users/:name', ->
+      @name = @route.name
+      @eco 'user/show'
+
+The `@eco` function takes a path of the Eco template. By default, this should be located under a folder named `./views`.
+The template is rendered in the current context, so you can pass variables to them by setting them locally.
+
+If a file exists under `./views/layout.*`, then it'll be used as the application's default layout. You can specify a different layout with the `layout` option.
+
+    app.get '/users', ->
+      @users = User.all().wait()
+      @mustache 'user/list', layout: 'basic'
+
+##JSON
+
+You can serve up JSON and JSONP with the `@json` and `@jsonp` helpers respectively.
+
+    app.get '/users', ->
+      @json {status: 'ok'}
+
+    app.get '/users', ->
+      @users = User.all().wait()
+      @jsonp @users
+
+By default, `@jsonp` uses the `@params.callback` parameter as the name of its wrapper function.
 
 ##Fibers
 
@@ -64,7 +117,7 @@ As well as returning the response body as a string, you
 
       "Saved project: #{project.id}"
 
-##Session
+##Cookies & Session
 
     app.get '/login', ->
       user = User.find(email: @params.email).wait()
@@ -102,6 +155,8 @@ As well as returning the response body as a string, you
     @ok
 
     @sendFile
+
+    @authBasic
 
 ##Credits
 
