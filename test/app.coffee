@@ -1,5 +1,5 @@
 Sequelize = require('sequelize')
-strata    = require('strata')
+strata    = require('ace').strata
 
 sequelize = new Sequelize('mydb', 'root')
 Post = sequelize.define('Post', {
