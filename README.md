@@ -1,20 +1,45 @@
+Ace is [Sinatra](http://www.sinatrarb.com/) for Node, a simple web-server with a straightforward API.
+
+Every request is wrapped in a [Node Fiber](https://github.com/laverdet/node-fibers), allowing you to program in a synchronous manner without callbacks, but with all the advantages of an asynchronous web-server.
+
+Ace is built on the the rock solid [Strata HTTP framework](http://stratajs.org/).
+
 ##Usage
+
+Node >= v0.7.3 is required, as well as npm. To install, run:
 
     npm install -g ace
 
-    ace myapp.js
-    ace myapp.coffee
+To generate a new app, run:
 
-##Response
+    ace new myapp
+    cd myapp
+
+To serve up an app, run:
+
+    ace
+
+##Routing
+
+In Ace, a route is a HTTP method paired with a URL matching pattern. For example:
+
+    ace.get '/users', ->
+      'Hello World'
+
+Anything returned from a routing callback is set as the response body.
+
+You can also specify a routing pattern, which is available in the callback under the `@route` object.
+
+    ace.get '/users/:name', ->
+      "Hello #{@route.name}"
+
+##Responses
+
+As well as returning the response body as a string, you
 
     @response [200, {}, '']
     @response ''
     @response ->
-
-##Params & Route
-
-    app.get '/users/:name', ->
-      "Hi #{@route.name}"
 
 ##Static
 
@@ -77,3 +102,7 @@
     @ok
 
     @sendFile
+
+##Credits
+
+Ace was built by [Alex MacCaw](http://alexmaccaw.com) and [Michael Jackson](http://mjijackson.com/).
