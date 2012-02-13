@@ -70,6 +70,18 @@ POST, PUT and DELETE callbacks are also available, using the `post`, `put` and `
       @user.destroy().wait()
       @redirect "/users"
 
+##Parameters
+
+URL encoded forms, multipart uploads and JSON parameters are available via the `@params` object:
+
+    app.post '/posts', ->
+      @post = Post.create(
+        name: @params.name,
+        body: @params.body
+      ).wait()
+
+      @redirect "/posts/#{@post.id}"
+
 ##Request
 
 You can access request information using the `@request` object.
@@ -103,7 +115,17 @@ You can check to see what the request accepts in response:
       else
         @eco 'users/list'
 
-You can also access the raw `@env` object:
+You can also look at the request format (calculated from the URL's extension). This can often give a better indication of what clients are expecting in response.
+
+      app.get '/users', ->
+        @users = User.all().wait()
+
+        if @format is 'application/json'
+          @jsonp @users
+        else
+          @eco 'users/list'
+
+Finally you can access the raw `@env` object:
 
     @env['Warning']
 
@@ -125,25 +147,13 @@ If you only need to set the status code, you can just return it directly from th
       # ...
       @ok
 
-##Parameters
-
-URL encoded forms, multipart uploads and JSON parameters are available via the `@params` object:
-
-    app.post '/posts', ->
-      @post = Post.create(
-        name: @params.name,
-        body: @params.body
-      ).wait()
-
-      @redirect "/posts/#{@post.id}"
-
 ##Static
 
 By default, if a folder called `public` exists under the app root, its contents will be served up statically. You can configure the path of this folder like so:
 
     app.set public: './public'
 
-You can add static assets like stylesheets and images to the `public` folder. They'll be served up automatically.
+You can add static assets like stylesheets and images to the `public` folder.
 
 ##Templates
 
