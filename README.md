@@ -1,4 +1,4 @@
-Ace is [Sinatra](http://www.sinatrarb.com/) for Node; a simple web-server, written in CoffeeScript, with a straightforward API.
+Ace is [Sinatra](http://www.sinatrarb.com/) for Node; a simple web-server written in CoffeeScript with a straightforward API.
 
 Every request is wrapped in a [Node Fiber](https://github.com/laverdet/node-fibers), allowing you to program in a synchronous manner without callbacks, but with all the advantages of an asynchronous web-server.
 

@@ -92,11 +92,10 @@ class App extends strata.Builder
 
     super
 
-  serve: ->
-    strata.run this,
-      host:   @settings.host
-      port:   @settings.port
-      socket: @settings.socket
+  serve: (options = {}) ->
+    for key, value of options
+      @settings[key] = value if value?
+    strata.run(this, @settings)
 
 methods =
   get: ['GET', 'HEAD'],

@@ -97,12 +97,12 @@ class Context
     @env.format
 
   @::getter 'acceptsJSON', ->
-    JSONMime = 'application/json'
-    return true if @env.format is JSONMime
+    mime = 'application/json'
+    return true if @env.format is mime
 
     # Check to see if JSON is explicitly
     # mentioned in the accept header
     accept = @request.accept or ''
-    accept.indexOf(JSONMime) != -1
+    accept.indexOf(mime) != -1
 
 module.exports = Context

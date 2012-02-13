@@ -2,8 +2,8 @@
 
 var path = require('path'),
     fs   = require('fs'),
-    argv = process.argv.slice(2),
-    App  = require('../lib/index').App;
+    App  = require('../lib/index').App,
+    optimist = require('optimist');
 
 // Use local ace module if available
 if (fs.existsSync('./node_modules/.bin/ace') && !global.local) {
@@ -20,8 +20,16 @@ var copy = function(from, to){
   fs.writeFileSync(to, data, 'utf8');
 };
 
-var command  = argv[0];
-var filename = argv[1];
+var argv = optimist.usage([
+  '  usage: ace COMMAND [PATH]',
+  '    new    generate a new application',
+  '    server start the server',
+].join("\n"))
+.alias('p', 'port')
+.argv;
+
+var command  = argv._[0];
+var filename = argv._[1];
 
 if (filename) {
   filename = path.resolve(filename);
@@ -70,4 +78,6 @@ process.chdir(path.dirname(filename));
 var app = new App;
 global.app = app;
 require(filename);
-app.serve();
+app.serve({
+  port: process.env.PORT || argv.port
+});
