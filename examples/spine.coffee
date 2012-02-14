@@ -20,5 +20,19 @@ app.get '/specs.js', ->
   specsPackage.compile(@settings.minify)
 
 app.get '/application.css', ->
-  @contentType = 'text/css'
-  cssPackage.compile()
+  @stylus 'css/application'
+
+# app.get '/users', ->
+#   @users = []
+#   @json @users
+#
+# app.post '/users', ->
+#   # Create user
+#   @user = {}
+#   @json @user
+#
+# app.put '/users/:id', ->
+#   @ok
+#
+# app.del '/users/:id', ->
+#   @ok
