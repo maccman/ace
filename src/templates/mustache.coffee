@@ -1,16 +1,20 @@
+Q       = require('q')
 path    = require('path')
 mu      = require('mu')
 context = require('../context')
 
 compile = (path, context) ->
-  fiber = Fiber.current
+  deffered = Q.defer()
+
   fs.readFile path, 'utf8', (err, data) ->
-    fiber.throwInto(err) if err
+    return deffered.fail(err) if err
+
     buffer = ''
     stream = mu.compileText(data)(context)
     stream.addListener 'data', (c) -> buffer += c
-    stream.addListener 'end', -> fiber.run(buffer)
-  yield()
+    stream.addListener 'end', -> deffered.resolve(buffer)
+
+  deffered.promise
 
 view = (name, options = {}) ->
   path   = @resolve(name)

@@ -1,15 +1,17 @@
+Q       = require('q')
 path    = require('path')
 fs      = require('fs')
 context = require('../context')
 coffee  = require('coffee-script')
 
 compile = (path) ->
-  fiber = Fiber.current
-  fs.readFile path, 'utf8', (err, data) ->
-    fiber.throwInto(err) if err
+  deffered = Q.defer()
 
-    fiber.run coffee.compile(data)
-  yield()
+  fs.readFile path, 'utf8', (err, data) ->
+    return deffered.fail(err) if err
+    deffered.resolve(coffee.compile(data))
+
+  deffered.promise
 
 view = (name) ->
   @contentType = 'text/javascript'

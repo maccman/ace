@@ -1,4 +1,5 @@
 strata = require('strata')
+{wait} = require('./async')
 
 class Context
   @include: (obj) ->
@@ -49,16 +50,16 @@ class Context
   getter: @::__defineGetter__
 
   @::getter 'cookies', ->
-    @request.cookies.bind(@request).wait()
+    wait(@request.cookies.bind(@request))
 
   @::getter 'params', ->
-    @request.params.bind(@request).wait()
+    wait(@request.params.bind(@request))
 
   @::getter 'query', ->
-    @request.query.bind(@request).wait()
+    wait(@request.query.bind(@request))
 
   @::getter 'body', ->
-    @request.body.bind(@request).wait()
+    wait(@request.body.bind(@request))
 
   @::getter 'route', ->
     @env.route

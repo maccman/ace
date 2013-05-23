@@ -1,5 +1,3 @@
-require('./ext')
-
 strata    = require('strata')
 App       = require('./app')
 context   = require('./context')

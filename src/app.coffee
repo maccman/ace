@@ -1,9 +1,9 @@
 fs        = require('fs')
 path      = require('path')
 strata    = require('strata')
-fibers    = require('./fibers')
+Q         = require('q')
 context   = require('./context')
-static    = require('./static')
+statics   = require('./static')
 filter    = require('./filter')
 templates = require('./templates')
 format    = require('./format')
@@ -37,7 +37,6 @@ class App extends strata.Builder
     unless fs.existsSync(@settings.public)
       @settings.static = false
 
-    @pool   = new fibers.Pool
     @router = new strata.Router
 
   before: (conditions, callback) ->
@@ -80,16 +79,20 @@ class App extends strata.Builder
       @use(strata.sessionCookie, options)
 
     if @settings.static
-      @use(static, @settings.public, ['index.html'])
+      @use(statics, @settings.public, ['index.html'])
 
     @use(format)
 
     if @beforeFilters
       @use(filter, @beforeFilters, this)
 
-    @run (env, callback) =>
-      @pool.wrap(@router.toApp())(env, callback)
-
+    `
+    this.run(function(env, callback){
+      return Q.async(function(){
+        this.router.toApp()(env, callback);
+      }.call(this));
+    }.bind(this));
+    `
     super
 
   serve: (options = {}) ->

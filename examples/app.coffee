@@ -1,5 +1,10 @@
 Sequelize = require('sequelize')
-strata    = require('ace').strata
+
+Ace = require('../src')
+require('../src/ext')
+strata    = Ace.strata
+
+app = new Ace.App
 
 sequelize = new Sequelize('mydb', 'root')
 Post = sequelize.define('Post', {
@@ -74,3 +79,5 @@ app.del '/posts/:id', ->
   @redirect Post
 
 app.root '/posts'
+
+app.serve()

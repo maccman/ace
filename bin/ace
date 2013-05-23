@@ -1,4 +1,4 @@
-#!/usr/bin/env node
+#!/usr/bin/env node --harmony
 
 var path = require('path'),
     fs   = require('fs'),
@@ -23,7 +23,7 @@ var copy = function(from, to){
 var argv = optimist.usage([
   '  usage: ace COMMAND [PATH]',
   '    new    generate a new application',
-  '    server start the server',
+  '    server start the server'
 ].join("\n"))
 .alias('p', 'port')
 .argv;

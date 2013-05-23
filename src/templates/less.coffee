@@ -1,17 +1,20 @@
+Q       = require('q')
 path    = require('path')
 fs      = require('fs')
 context = require('../context')
 less    = require('less')
 
 compile = (path) ->
-  fiber = Fiber.current
+  deffered = Q.defer()
+
   fs.readFile path, 'utf8', (err, data) ->
-    fiber.throwInto(err) if err
+    return deffered.fail(err) if err
 
     less.render data, (err, css) ->
-      fiber.throwInto(err) if err
-      fiber.run(css)
-  yield()
+      return deffered.fail(err) if err
+      deffered.resolve(css)
+
+  deffered.promise
 
 view = (name) ->
   @contentType = 'text/css'

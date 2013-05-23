@@ -1,15 +1,17 @@
+Q       = require('q')
 path    = require('path')
 fs      = require('fs')
 context = require('../context')
 eco     = require('eco')
 
 compile = (path, context) ->
-  fiber = Fiber.current
-  fs.readFile path, 'utf8', (err, data) ->
-    fiber.throwInto(err) if err
+  deffered = Q.defer()
 
-    fiber.run eco.render(data, context)
-  yield()
+  fs.readFile path, 'utf8', (err, data) ->
+    return deffered.fail(err) if err
+    deffered.resolve(eco.render(data, context))
+
+  deffered.promise
 
 view = (name, options = {}) ->
   path   = @resolve(name)
