@@ -1,4 +1,4 @@
-require('fibers')
+Fiber = require('fibers')
 context = require('./context')
 
 task = (callback) ->
@@ -13,7 +13,7 @@ sleep = (ms) ->
   setTimeout ->
     fiber.run()
   , ms
-  yield()
+  Fiber.yield()
 
 class Pool
   constructor: (size = 100) ->
