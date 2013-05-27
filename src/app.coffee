@@ -3,10 +3,12 @@ path      = require('path')
 strata    = require('strata')
 fibers    = require('./fibers')
 context   = require('./context')
-static    = require('./static')
 filter    = require('./filter')
 templates = require('./templates')
 format    = require('./format')
+
+# N.B. static is a reserved word
+staticFiles = require('./static')
 
 class App extends strata.Builder
   defaults:
@@ -80,7 +82,7 @@ class App extends strata.Builder
       @use(strata.sessionCookie, options)
 
     if @settings.static
-      @use(static, @settings.public, ['index.html'])
+      @use(staticFiles, @settings.public, ['index.html'])
 
     @use(format)
 

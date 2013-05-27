@@ -1,3 +1,4 @@
+Fiber   = require('fibers')
 path    = require('path')
 fs      = require('fs')
 context = require('../context')
@@ -9,7 +10,7 @@ compile = (path) ->
     fiber.throwInto(err) if err
 
     fiber.run coffee.compile(data)
-  yield()
+  Fiber.yield()
 
 view = (name) ->
   @contentType = 'text/javascript'
