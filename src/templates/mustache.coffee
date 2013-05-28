@@ -1,3 +1,4 @@
+Fiber   = require('fibers')
 path    = require('path')
 mu      = require('mu')
 context = require('../context')
@@ -10,7 +11,7 @@ compile = (path, context) ->
     stream = mu.compileText(data)(context)
     stream.addListener 'data', (c) -> buffer += c
     stream.addListener 'end', -> fiber.run(buffer)
-  yield()
+  Fiber.yield()
 
 view = (name, options = {}) ->
   path   = @resolve(name)

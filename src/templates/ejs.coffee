@@ -1,3 +1,4 @@
+Fiber   = require('fibers')
 path    = require('path')
 fs      = require('fs')
 context = require('../context')
@@ -9,7 +10,7 @@ compile = (path, context) ->
     fiber.throwInto(err) if err
 
     fiber.run ejs.render(data, context)
-  yield()
+  Fiber.yield()
 
 view = (name) ->
   path = @resolve(name)

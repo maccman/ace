@@ -1,3 +1,4 @@
+Fiber   = require('fibers')
 path    = require('path')
 fs      = require('fs')
 context = require('../context')
@@ -11,7 +12,7 @@ compile = (path) ->
     stylus.render data, {filename: path}, (err, css) ->
       fiber.throwInto(err) if err
       fiber.run(css)
-  yield()
+  Fiber.yield()
 
 view = (name) ->
   @contentType = 'text/css'

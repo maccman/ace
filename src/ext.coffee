@@ -1,4 +1,4 @@
-require('fibers')
+Fiber  = require('fibers')
 future = require('fibers/future')
 
 Function::wait = ->
@@ -9,4 +9,4 @@ EventEmitter::wait = (success = 'success', failure = 'failure') ->
   fiber = Fiber.current
   @on success, -> fiber.run(arguments...)
   @on failure, -> fiber.throwInto(arguments...)
-  yield()
+  Fiber.yield()
